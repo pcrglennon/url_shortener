@@ -1,0 +1,16 @@
+web:
+  build: .
+  command: bundle exec rackup -o 0.0.0.0 -p 9292
+  ports:
+    - '9292:9292'
+  volumes:
+    - .:/app
+  links:
+    - redis
+  stdin_open: true
+  tty: true
+
+redis:
+  image: redis:3.0.7
+  ports:
+    - '6379:6379'

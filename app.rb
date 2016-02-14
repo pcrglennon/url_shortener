@@ -1,14 +1,19 @@
-require 'rubygems'
-require 'bundler'
-
-Bundler.require(:default, ENV.fetch('RACK_ENV', 'development').to_sym)
+require './config/environment'
 
 module UrlShortener
   class App < Sinatra::Application
-    redis = Redis.new(host: ENV['REDIS_1_PORT_6379_TCP_ADDR'])
+    COUNT = 'count'
 
     get '/' do
       erb :index
+    end
+
+    post '/' do
+      url = params['url']
+      next_available_hex_key = REDIS.incr(COUNT).to_s(16)
+      REDIS.mset(next_available_hex_key, url)
+
+      201
     end
   end
 end

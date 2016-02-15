@@ -1,10 +1,19 @@
 <h1>Url Shortener App</h1>
 
+<form action="/" method="post">
+  <label for="url">Enter URL:</label>
+  <input type="url" name="url" autofocus="true" required>
+
+  <input type="submit" value="Generate Shortlink"></input>
+</form>
+
 <% if @shortened %>
-  <h4 class="url-success">
+  <h4 class="link-success">
     Shortened URL:
     <a href="<%= @shortened %>"><%= @shortened %></a>
   </h4>
 <% elsif @error %>
-  <h4 class="url-error"><%= @error %></h4>
+  <h4 class="link-error">
+    <%= @error %>
+  </h4>
 <% end %>

@@ -1,1 +1,10 @@
 <h1>Url Shortener App</h1>
+
+<% if @shortened %>
+  <h4 class="url-success">
+    Shortened URL:
+    <a href="<%= @shortened %>"><%= @shortened %></a>
+  </h4>
+<% elsif @error %>
+  <h4 class="url-error"><%= @error %></h4>
+<% end %>

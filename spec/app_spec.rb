@@ -5,8 +5,6 @@ RSpec.describe(UrlShortener::App) do
     described_class
   end
 
-  # let(:redis) { object_double('REDIS').as_stubbed_const }
-
   describe 'GET "/"' do
     before { get '/' }
 
@@ -22,26 +20,45 @@ RSpec.describe(UrlShortener::App) do
       before do
         allow(REDIS).to receive(:incr).with('count') { 100000 }
         allow(REDIS).to receive(:mset)
+
         post '/', { url: url }
       end
 
-      it 'should return a 201' do
-        expect(last_response.status).to eq(201)
-      end
-
-      it 'should increment to total count of key-value pairs' do
+      it 'should increment the total count of key-value pairs' do
         expect(REDIS).to have_received(:incr).with('count')
       end
 
       it 'should insert the URL with a key of the next-available hex value' do
         expect(REDIS).to have_received(:mset).with('186a0', url)
       end
+
+      it 'should render the index and display the shortened URL' do
+        expected_short_url = "#{last_request.base_url}/186a0"
+
+        expect(last_response.body).to match(/<a href="#{expected_short_url}">#{expected_short_url}<\/a>/)
+      end
     end
-  end
+    context 'with an improperly-formatted URL' do
+      let(:url) { 'this is not a URL' }
 
-  context 'with an improperly-formatted URL' do
-    let(:url) { 'this is not a URL' }
+      before do
+        allow(REDIS).to receive(:incr)
+        allow(REDIS).to receive(:mset)
 
-    before { post '/', { url: url } }
+        post '/', { url: url }
+      end
+
+      it 'should not increment the total count of key-value pairs' do
+        expect(REDIS).to_not have_received(:incr)
+      end
+
+      it 'should not insert anything into the DB' do
+        expect(REDIS).to_not have_received(:mset)
+      end
+
+      it 'should render the index with the shortened URL' do
+        expect(last_response.body).to include("Invalid URL: \"#{url}\"")
+      end
+    end
   end
 end

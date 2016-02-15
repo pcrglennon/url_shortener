@@ -8,6 +8,15 @@ module UrlShortener
       erb :index
     end
 
+    get '/:key' do
+      begin
+        url = find_url(params['key'])
+        redirect to(url)
+      rescue KeyNotFoundError => e
+        @error = e.message
+      end
+    end
+
     post '/' do
       begin
         key = make_key(params['url'])
@@ -31,7 +40,17 @@ module UrlShortener
         raise InvalidUrlError, "Invalid URL: \"#{url}\""
       end
     end
+
+    def find_url(key)
+      url = REDIS.get(key)
+      if url.nil?
+        raise KeyNotFoundError, "Could not find a link for key #{key}"
+      end
+
+      url
+    end
   end
 
   class InvalidUrlError < StandardError; end
+  class KeyNotFoundError < StandardError; end
 end

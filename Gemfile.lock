@@ -5,6 +5,7 @@ GEM
     daemons (1.2.3)
     diff-lcs (1.2.5)
     eventmachine (1.0.9.1)
+    json (1.8.1)
     method_source (0.8.2)
     pry (0.10.3)
       coderay (~> 1.1.0)
@@ -46,6 +47,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  json
   pry (~> 0.10.3)
   rack-test (~> 0.6.3)
   redis (~> 3.2)
@@ -53,6 +55,3 @@ DEPENDENCIES
   shotgun (~> 0.9.1)
   sinatra (~> 1.4.7)
   thin (~> 1.6)
-
-BUNDLED WITH
-   1.11.2

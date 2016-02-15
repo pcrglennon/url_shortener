@@ -1,19 +1,27 @@
-<h1>Url Shortener App</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
 
-<form action="/" method="post">
-  <label for="url">Enter URL:</label>
-  <input type="url" name="url" autofocus="true" required>
+    <title>Url Shortener</title>
 
-  <input type="submit" value="Generate Shortlink"></input>
-</form>
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="javascripts/app.js"></script>
+  </head>
 
-<% if @shortened %>
-  <h4 class="link-success">
-    Shortened URL:
-    <a href="<%= @shortened %>"><%= @shortened %></a>
-  </h4>
-<% elsif @error %>
-  <h4 class="link-error">
-    <%= @error %>
-  </h4>
-<% end %>
+  <body>
+    <h1>Url Shortener App</h1>
+
+    <form action="/" method="post">
+      <label for="url">Enter URL:</label>
+      <input type="text" name="url" autofocus="true" required>
+
+      <input type="submit" value="Generate Shortlink"></input>
+    </form>
+
+    <section class="link-success"></section>
+    <section class="link-error">
+      <%= "<h4>#{@error}</h4>" if @error %>
+    </section>
+  </body>
+</html>

@@ -14,18 +14,19 @@ module UrlShortener
         redirect to(url)
       rescue KeyNotFoundError => e
         @error = e.message
+        erb :index
       end
     end
 
     post '/' do
+      content_type :json
+
       begin
         key = make_key(params['url'])
-        @shortened = "#{request.base_url}/#{key}"
+        [201, {key: key}.to_json]
       rescue InvalidUrlError => e
-        @error = e.message
+        [400, {message: e.message}.to_json]
       end
-
-      erb :index
     end
 
     private

@@ -59,10 +59,12 @@ RSpec.describe(UrlShortener::App) do
         expect(REDIS).to have_received(:mset).with('186a0', url)
       end
 
-      it 'should render the index page and display the shortened URL' do
-        expected_short_url = "#{last_request.base_url}/186a0"
+      it 'should return a 201' do
+        expect(last_response.status).to eq(201)
+      end
 
-        expect(last_response.body).to match(/<a href="#{expected_short_url}">#{expected_short_url}<\/a>/)
+      it 'should return the shortlink key' do
+        expect(last_response.body).to eq({ key: '186a0' }.to_json);
       end
     end
 
@@ -84,8 +86,12 @@ RSpec.describe(UrlShortener::App) do
         expect(REDIS).to_not have_received(:mset)
       end
 
-      it 'should render the index page and display an error' do
-        expect(last_response.body).to include("Invalid URL: \"#{url}\"")
+      it 'should return a 400' do
+        expect(last_response.status).to eq(400)
+      end
+
+      it 'should return the shortlink key' do
+        expect(last_response.body).to eq({ message: "Invalid URL: \"#{url}\"" }.to_json);
       end
     end
   end

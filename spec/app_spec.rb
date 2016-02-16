@@ -6,10 +6,24 @@ RSpec.describe(UrlShortener::App) do
   end
 
   describe 'GET "/"' do
-    before { get '/' }
+    let(:shortlinks) { ['foo', 'bar', 'a', 'b'] }
+
+    before do
+      # Seed Redis w/ the shortlinks (with increasing # of hits)
+      shortlinks.each_with_index do |shortlink, i|
+        REDIS.mset(shortlink, "https://example.org/#{shortlink}")
+        REDIS.zadd('hits', (i + 1), shortlink)
+      end
+
+      get '/'
+    end
 
     it 'should return a 200' do
       expect(last_response.status).to eq(200)
+    end
+
+    it 'should render the index page' do
+      expect(last_response.body).to include('Url Shortener App')
     end
   end
 
@@ -18,7 +32,10 @@ RSpec.describe(UrlShortener::App) do
 
     context 'with a key in the DB' do
       before do
+        REDIS.zadd('hits', 1, key)
+
         allow(REDIS).to receive(:get).with(key) { 'https://example.org/some/neato/thing' }
+        allow(REDIS).to receive(:zincrby)
 
         get "/#{key}"
       end
@@ -28,6 +45,10 @@ RSpec.describe(UrlShortener::App) do
 
         follow_redirect!
         expect(last_request.url).to eq('https://example.org/some/neato/thing')
+      end
+
+      it 'should increment the hits counter for that key' do
+        expect(REDIS).to have_received(:zincrby).with('hits', 1, key)
       end
     end
 

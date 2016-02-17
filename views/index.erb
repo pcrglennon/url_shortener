@@ -7,29 +7,46 @@
 
     <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
     <script src="javascripts/app.js"></script>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
+    <link href ="stylesheets/app.css" rel="stylesheet">
   </head>
 
   <body>
-    <h1>Url Shortener App</h1>
+    <div class="container">
+      <h1 class="text-center">Url Shortener App</h1>
 
-    <form action="/" method="post">
-      <label for="url">Enter URL:</label>
-      <input type="text" name="url" autofocus="true" required>
+      <section class="row link-form">
+        <div class="col-sm-6 col-sm-offset-3">
+          <form action="/" method="post">
+            <div class="form-group">
+              <label for="url">Enter URL:</label>
+              <input type="url" name="url" class="form-control" autofocus="true" required>
+            </div>
 
-      <input type="submit" value="Generate Shortlink"></input>
-    </form>
+            <button type="submit" class="btn btn-primary">Generate Shortlink</button>
+          </form>
+        </div>
+      </section>
 
-    <section class="link-success"></section>
-    <section class="link-error">
-      <%= "<h4>#{@error}</h4>" if @error %>
-    </section>
+      <section class="row link-alerts">
+        <div class="col-sm-6 col-sm-offset-3">
+          <div class="bg-info link-alert-success"></div>
+          <div class="bg-danger link-alert-error">
+            <%= "<h4>#{@error}</h4>" if @error %>
+          </div>
+        </div>
+      </section>
 
-    <section class="top-links">
-      <ul>
-        <% @top_links.each do |link| %>
-          <li><%= link %></li>
-        <% end %>
-      </ul>
-    </section>
+      <section class="row top-links">
+        <div class="col-sm-6 col-sm-offset-3">
+          <ul>
+            <% @top_links.each_with_index do |link, i| %>
+              <li><%= i + 1 %>) <%= link %></li>
+            <% end %>
+          </ul>
+        </div>
+      </section>
+    </div>
   </body>
 </html>

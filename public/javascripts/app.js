@@ -1,8 +1,8 @@
 $(document).ready(function() {
   var form = $("form"),
       urlInput = form.find("input[name='url']"),
-      linkSuccess = $('.link-success'),
-      linkError = $('.link-error');
+      linkAlertSuccess = $('.link-alert-success'),
+      linkAlertError = $('.link-alert-error');
 
   form.submit(function(event) {
     event.preventDefault();
@@ -26,16 +26,16 @@ $(document).ready(function() {
     var innerHtml = 'Shortlink: <a href="/' + shortlinkKey + '">' +
                       document.location.hostname + '/' + shortlinkKey +
                     '</a>';
-    linkSuccess.html(innerHtml);
+    linkAlertSuccess.html(innerHtml);
   }
 
   function displayError(message) {
     var innerHtml = '<span>' + message + '</span>';
-    linkError.html(innerHtml);
+    linkAlertError.html(innerHtml);
   }
 
   function clearSuccessAndError() {
-    linkSuccess.empty();
-    linkError.empty();
+    linkAlertSuccess.empty();
+    linkAlertError.empty();
   }
 });

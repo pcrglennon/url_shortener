@@ -1,0 +1,14 @@
+web:
+  build: .
+  command: bundle exec rackup -o 0.0.0.0 -p 9292
+  ports:
+    - '9292:9292'
+  links:
+    - redis
+  environment:
+    RACK_ENV: 'production'
+
+redis:
+  image: redis:3.0.7
+  ports:
+    - '6379'

@@ -6,6 +6,6 @@ RSpec.configure do |config|
   include Rack::Test::Methods
 
   config.after(:example) do
-    Redis.connect(REDIS_CONFIG).flushdb
+    Redis.connect(redis_config).flushdb
   end
 end

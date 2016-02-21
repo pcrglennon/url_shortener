@@ -2,8 +2,11 @@ require './config/environment'
 
 module UrlShortener
   class App < Sinatra::Application
-    COUNT = 'count'
-    HITS = 'hits'
+    configure do
+      COUNT = 'count'
+      HITS = 'hits'
+      REDIS = Redis.new(redis_config)
+    end
 
     get '/' do
       @top_links = get_top_links(100)

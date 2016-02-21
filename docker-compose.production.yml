@@ -7,8 +7,14 @@ web:
     - redis
   environment:
     RACK_ENV: 'production'
+  restart: always
+  container_name: url_shortener_web
 
 redis:
   image: redis:3.0.7
+  volumes:
+    - /data/redis
   ports:
     - '6379'
+  restart: always
+  container_name: url_shortener_redis

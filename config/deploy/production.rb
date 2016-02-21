@@ -17,10 +17,11 @@ namespace :docker do
   task :setup_container => :copy_shared_files do
     on roles(:docker) do |host|
       within current_path do
-        execute 'docker-compose', 'stop', 'web'
-        execute 'docker-compose', 'rm', '-fv', 'web'
         execute 'docker-compose', 'build'
-        execute 'docker-compose', '-f', 'docker-compose.production.yml', 'up', '-d'
+        execute 'docker-compose',
+                '-f', 'docker-compose.production.yml',
+                '-p', 'url_shortener',
+                'up', '-d'
       end
     end
   end

@@ -1,12 +1,13 @@
 web:
   build: .
-  command: bundle exec rackup -o 0.0.0.0 -p 9292
+  command: bundle exec unicorn -c config/unicorn.rb
   ports:
-    - '9292:9292'
+    - '8080:8080'
   volumes:
     - .:/app
   links:
     - redis
+  container_name: url_shortener_web
   stdin_open: true
   tty: true
 
@@ -14,3 +15,4 @@ redis:
   image: redis:3.0.7
   ports:
     - '6379:6379'
+  container_name: url_shortener_redis

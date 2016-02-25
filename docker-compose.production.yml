@@ -1,13 +1,21 @@
-web:
+nginx:
+  build: ./nginx
+  links:
+    - app
+  ports:
+    - '80:80'
+  container_name: url_shortener_nginx
+
+app:
   build: .
-  command: bundle exec unicorn -c config/unicorn.production.rb
+  command: bundle exec unicorn -c config/unicorn.rb
   links:
     - redis
   ports:
-    - '8080:8080'
+    - '8080'
   environment:
     RACK_ENV: 'production'
-  container_name: url_shortener_web
+  container_name: url_shortener_app
 
 redis:
   image: redis:3.0.7

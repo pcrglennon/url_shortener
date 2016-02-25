@@ -1,4 +1,4 @@
-web:
+app:
   build: .
   command: bundle exec unicorn -c config/unicorn.rb
   ports:
@@ -7,7 +7,7 @@ web:
     - .:/app
   links:
     - redis
-  container_name: url_shortener_web
+  container_name: url_shortener_app
   stdin_open: true
   tty: true
 

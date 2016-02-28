@@ -21,7 +21,7 @@ namespace :docker do
         execute 'docker-compose',
                 '-f', 'docker-compose.production.yml',
                 '-p', fetch(:application),
-                'up'
+                'up', '-d'
       end
     end
   end

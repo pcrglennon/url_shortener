@@ -1,18 +1,20 @@
 app:
   build: .
-  command: bundle exec unicorn -c config/unicorn.rb
-  ports:
-    - '8080:8080'
-  volumes:
-    - .:/app
+  command: bundle exec unicorn -c config/unicorn.development.rb
   links:
     - redis
+  volumes:
+    - .:/app
+  ports:
+    - '8080:8080'
   container_name: url_shortener_app
   stdin_open: true
   tty: true
 
 redis:
   image: redis:3.0.7
+  volumes:
+    - /data/redis
   ports:
     - '6379:6379'
   container_name: url_shortener_redis

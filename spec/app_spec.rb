@@ -5,16 +5,12 @@ RSpec.describe(UrlShortener::App) do
     described_class
   end
 
-  let(:redis) { UrlShortener::App::REDIS }
-
   describe 'GET "/"' do
     let(:shortlinks) { ['foo', 'bar', 'a', 'b'] }
 
     before do
-      # Seed Redis w/ the shortlinks (with increasing # of hits)
       shortlinks.each_with_index do |shortlink, i|
-        redis.mset(shortlink, "https://example.org/#{shortlink}")
-        redis.zadd('hits', (i + 1), shortlink)
+        REDIS.set(shortlink, "https://example.org/#{shortlink}")
       end
 
       get '/'
@@ -34,10 +30,8 @@ RSpec.describe(UrlShortener::App) do
 
     context 'with a key in the DB' do
       before do
-        redis.zadd('hits', 1, key)
-
-        allow(redis).to receive(:get).with(key) { 'https://example.org/some/neato/thing' }
-        allow(redis).to receive(:zincrby)
+        REDIS.set(key, 'https://example.org/some/neato/thing')
+        REDIS.zadd(UrlShortener::TopLinks::HITS, 1, key)
 
         get "/#{key}"
       end
@@ -50,7 +44,7 @@ RSpec.describe(UrlShortener::App) do
       end
 
       it 'should increment the hits counter for that key' do
-        expect(redis).to have_received(:zincrby).with('hits', 1, key)
+        expect(REDIS.zscore(UrlShortener::TopLinks::HITS, key)).to eq(2)
       end
     end
 
@@ -68,18 +62,17 @@ RSpec.describe(UrlShortener::App) do
       let(:url) { 'https://example.org/some/neato/thing' }
 
       before do
-        allow(redis).to receive(:incr).with('count') { 100000 }
-        allow(redis).to receive(:mset)
+        allow(REDIS).to receive(:incr).with(described_class::COUNT) { 100000 }
 
         post '/', { url: url }
       end
 
       it 'should increment the total count of key-value pairs' do
-        expect(redis).to have_received(:incr).with('count')
+        expect(REDIS).to have_received(:incr).with(described_class::COUNT)
       end
 
       it 'should insert the URL with a key of the next-available hex value' do
-        expect(redis).to have_received(:mset).with('186a0', url)
+        expect(REDIS.get('186a0')).to eq(url)
       end
 
       it 'should return a 201' do
@@ -95,18 +88,18 @@ RSpec.describe(UrlShortener::App) do
       let(:url) { 'this is not a URL' }
 
       before do
-        allow(redis).to receive(:incr)
-        allow(redis).to receive(:mset)
+        allow(REDIS).to receive(:incr)
+        allow(REDIS).to receive(:mset)
 
         post '/', { url: url }
       end
 
       it 'should not increment the total count of key-value pairs' do
-        expect(redis).to_not have_received(:incr)
+        expect(REDIS).to_not have_received(:incr)
       end
 
       it 'should not insert anything into the DB' do
-        expect(redis).to_not have_received(:mset)
+        expect(REDIS).to_not have_received(:mset)
       end
 
       it 'should return a 400' do

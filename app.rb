@@ -2,27 +2,22 @@ require './config/environment'
 
 module UrlShortener
   class App < Sinatra::Application
-    configure do
-      COUNT = 'count'
-      HITS = 'hits'
-      REDIS = Redis.new(redis_config)
-    end
+    COUNT = '_count'
+    TOP_LINKS = TopLinks.new
 
     get '/' do
-      @top_links = get_top_links(100)
-      erb :index
+      render_index
     end
 
     get '/:key' do
       begin
         key = params['key']
         url = find_url(key)
-        increment_hits(key)
+        TOP_LINKS.increment(key)
         redirect to(url)
       rescue KeyNotFoundError => e
         @error = e.message
-        @top_links = get_top_links(100)
-        erb :index
+        render_index
       end
     end
 
@@ -38,6 +33,11 @@ module UrlShortener
     end
 
     private
+
+    def render_index
+      @top_links = TOP_LINKS.links(100)
+      erb :index
+    end
 
     def make_key(url)
       if url =~ URI::regexp(['http', 'https'])
@@ -57,20 +57,6 @@ module UrlShortener
       end
 
       url
-    end
-
-    def increment_hits(key)
-      REDIS.zincrby(HITS, 1, key)
-    end
-
-    def get_top_links(count)
-      REDIS.zrevrange(HITS, 0, (count - 1)).map do |key|
-        begin
-          "#{key} (#{find_url(key)})"
-        rescue KeyNotFoundError
-          nil
-        end
-      end.compact
     end
   end
 

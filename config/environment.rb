@@ -7,6 +7,8 @@ Bundler.require(:default, ENV['RACK_ENV'].to_sym)
 
 require 'yaml'
 
+Dir['./helpers/*.rb'].each { |f| require f }
+
 def redis_config
   begin
     return YAML.load(File.open('./config/redis.yml'))[ENV['RACK_ENV']]
@@ -17,3 +19,6 @@ def redis_config
     exit(0)
   end
 end
+
+# Establish a connection to the Redis DB
+REDIS = Redis.new(redis_config)
